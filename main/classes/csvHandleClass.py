@@ -1,5 +1,5 @@
 from pytube import YouTube
-
+import pandas as pd
 '''
 1 - get data from main 
 2 - turn into dataframe by pandas
@@ -8,12 +8,17 @@ from pytube import YouTube
 
 class csvHandle:
   
-  dataDictionary = None 
+  dataDictionary = {}
 
   @classmethod
   def HandleInfomation(cls, listInfo):
     for i in range(len(listInfo)):
       csvHandle.dataDictionary[i] = listInfo[i]
-      print('dataDictionary', csvHandle.dataDictionary)
+    youtubeData = pd.DataFrame(data = csvHandle.dataDictionary)
+    youtubeData.to_csv('news.csv')
+
+  def showInfo(self):
+    print(self.dataDictionary)
+
 
 
