@@ -1,16 +1,14 @@
-'''
-yObj = youtubeDetail()
-
-yObj.getVideoDetail('JGwWNGJdvx8')
-
-'''
-from threading import Thread
-from queue import Queue
-from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import Process, Queue
+from classes.YoutubeDetailClass import youtubeDetail
+from classes.CsvHandleClass import csvHandle
+import subprocess
+import webbrowser
 import time
+import os
 
-from classes.youtubeDetailClass import youtubeDetail
-from classes.csvHandleClass import csvHandle
+
+def f(queue, i):
+  print('hello: ', i)
 
 listId = [
 'JGwWNGJdvx8',
@@ -37,126 +35,48 @@ listId = [
 
 base_url = 'https://www.youtube.com/watch?v='
 
-dataQueue = Queue()
-csvQueue = Queue()
-
-listData = []
-
-def getData(id):
+csv = csvHandle()
+def getData(queue, id, index):
   y = youtubeDetail()
   data = y.getVideoDetail(base_url+id)
-  dataQueue.put(data)
-  listData.append(data)
- 
-t0 = Thread(target=getData, args=(listId[0],))
-t1 = Thread(target=getData, args=(listId[1],))
-t2 = Thread(target=getData, args=(listId[2],))
-t3 = Thread(target=getData, args=(listId[3],))
-t4 = Thread(target=getData, args=(listId[4],))
-t5 = Thread(target=getData, args=(listId[5],))
-t6 = Thread(target=getData, args=(listId[6],))
-t7 = Thread(target=getData, args=(listId[7],))
-t8 = Thread(target=getData, args=(listId[8],))
-t9 = Thread(target=getData, args=(listId[9],))
-t10 = Thread(target=getData, args=(listId[10],))
-t11 = Thread(target=getData, args=(listId[11],))
-t12 = Thread(target=getData, args=(listId[12],))
-t13 = Thread(target=getData, args=(listId[13],))
-t14 = Thread(target=getData, args=(listId[14],))
-t15 = Thread(target=getData, args=(listId[15],))
-t16 = Thread(target=getData, args=(listId[16],))
-t17 = Thread(target=getData, args=(listId[17],))
-t18 = Thread(target=getData, args=(listId[18],))
-t19 = Thread(target=getData, args=(listId[19],))
+  linkVideo = base_url+id
+  timeVideo = data[2]
+  print('time video:',timeVideo, ",linkVideo:",linkVideo)
+  queue.put(data)
 
-t0.start()
-t1.start()
-t2.start()
-t3.start()
-t4.start()
-t5.start()
-t6.start()
-t7.start()
-t8.start()
-t9.start()
-t10.start()
-t11.start()
-t12.start()
-t13.start()
-t14.start()
-t15.start()
-t16.start()
-t17.start()
-t18.start()
-t19.start()
+  #thao browser process
+  # browser = subprocess.Popen(rf'"C:\Program Files\Google\Chrome\Application\chrome.exe" --kiosk {linkVideo}')
+  # time.sleep(10)
+  # browser.kill()
 
-t0.join()
-t1.join()
-t2.join()
-t3.join()
-t4.join()
-t5.join()
-t6.join()
-t7.join()
-t8.join()
-t9.join()
-t10.join()
-t11.join()
-t12.join()
-t13.join()
-t14.join()
-t15.join()
-t16.join()
-t17.join()
-t18.join()
-t19.join()
-
-# csv = csvHandle()
-# csv.HandleInfomation(listData)
-# csv.showInfo()
+  # webbrowser.open(url)
+  #   time.sleep(20)
+  #   pyautogui.hotkey('ctrl', 'w')
+  #   print("tab closed")
 
 
-#----------------------------------------------------------------------------------
+def checkQueue(queue):
+  time.sleep(1)
+  while True:
+    if queue.empty():
+      break
+    data = queue.get()
+    print('in checkqueue: ', data)
+    csv.HandleOneInfomation(data)
 
 
+if __name__ == '__main__':
+  processes = []
+  queue1 = Queue()
+  for i in range(20):
+    p = Process(target=getData, args=(queue1, listId[i], i,))
+    p.start()
+    processes.append(p)
 
+  for process in processes:
+    process.join()
 
-# CSV writer setup goes here
-
-# listData = []
-
-# queue = Queue()
-
-
-# def consume():
-#     while True:
-#         if not queue.empty():
-#             data = queue.get(block=False)
-            
-#             # Row comes out of queue; CSV writing goes here
-#             listData.append(data)
-            
-#             print(data)
-#         else:
-#           return
-
-
-# consumer = Thread(target=consume)
-# # consumer.setDaemon(True)
-# consumer.start()
-
-
-# def produce(i):
-#     # Data processing goes here; row goes into queue
-#     y = youtubeDetail()
-#     data = y.getVideoDetail(listLinks[i])
-#     queue.put(data)
-
-
-# with ThreadPoolExecutor(max_workers=20) as executor:
-#     for i in range(20):
-#         executor.submit(produce, i)
-
-# consumer.join()
-
-# print(listData)
+  queueThread = Process(target=checkQueue, args=(queue1,))
+  queueThread.start()
+  queueThread.join()
+  
