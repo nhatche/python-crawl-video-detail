@@ -35,7 +35,7 @@ listId = [
 
 base_url = 'https://www.youtube.com/watch?v='
 
-csv = csvHandle()
+
 def getData(queue, id, index):
   y = youtubeDetail()
   data = y.getVideoDetail(base_url+id)
@@ -55,7 +55,7 @@ def getData(queue, id, index):
   #   print("tab closed")
 
 
-def checkQueue(queue):
+def checkQueue(queue, csv):
   time.sleep(1)
   while True:
     if queue.empty():
@@ -68,6 +68,7 @@ def checkQueue(queue):
 if __name__ == '__main__':
   processes = []
   queue1 = Queue()
+  csv = csvHandle()
   for i in range(20):
     p = Process(target=getData, args=(queue1, listId[i], i,))
     p.start()
@@ -76,7 +77,7 @@ if __name__ == '__main__':
   for process in processes:
     process.join()
 
-  queueThread = Process(target=checkQueue, args=(queue1,))
+  queueThread = Process(target=checkQueue, args=(queue1,csv,))
   queueThread.start()
   queueThread.join()
   
