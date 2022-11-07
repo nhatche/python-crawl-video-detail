@@ -6,38 +6,30 @@ import pandas as pd
 3 - turn dataframe into csv file and save that csv file
 '''
 
-class csvHandle:
+class CsvHandle:
   
-  dataDictionary = {}
-  maxKeyDict = 0
-  listData = []
+  data_ditionary = {}
+  list_data = []
 
   @classmethod
   def HandleInfomation(cls, listInfo):
     for i in range(len(listInfo)):
-      csvHandle.dataDictionary[i] = listInfo[i]
-    youtubeData = pd.DataFrame(data = csvHandle.dataDictionary)
+      CsvHandle.data_ditionary[i] = listInfo[i]
+    youtubeData = pd.DataFrame(data = CsvHandle.data_ditionary)
     youtubeData.to_csv('news.csv')
 
-  def HandleOneInfomation(self, info):
-    # maxKey = max([*csvHandle.dataDictionary]) if len(csvHandle.dataDictionary) >0 else 0
-    # maxKey = csvHandle.maxKeyDict
-    # print('info',info)
-    # print('maxkey',maxKey)
-    # print('dataDictionary',csvHandle.dataDictionary)
-    # csvHandle.dataDictionary[maxKey] = info
-    # csvHandle.maxKeyDict = maxKey + 1
-    self.listData.append(info)
-    if(len(self.listData) == 20):
-      csvHandle.createCsv()
-    print(self.listData)
+  def handle_one_informatio(self, info):
+    self.list_data.append(info)
+    if(len(self.list_data) == 20):
+      CsvHandle.createCsv()
+    # print(self.list_data)
 
   def createCsv():
-    csvHandle.HandleInfomation(csvHandle.listData)
+    CsvHandle.HandleInfomation(CsvHandle.list_data)
     print('done createCsv')
 
   def showInfo(self):
-    print('show info function', self.dataDictionary)
+    print('show info function', self.data_ditionary)
 
 
 
